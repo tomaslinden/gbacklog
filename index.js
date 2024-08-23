@@ -37,6 +37,12 @@ app.get('/api/subjects', (request, response) => {
     })
 })
 
+app.get('/api/subjects/:id', (request, response) => {
+    Subject.findById(request.params.id).then(subject => {
+        response.json(subject)
+    })
+})
+
 app.post('/api/subjects', (request, response, next) => {
     const body = request.body
 
