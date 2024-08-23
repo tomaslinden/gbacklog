@@ -38,27 +38,41 @@ app.get('/api/subjects', (request, response) => {
 })
 
 app.post('/api/subjects', (request, response, next) => {
-  const body = request.body
+    const body = request.body
 
-  if (body.name === undefined) {
-    return response.status(400).json({ error: 'content missing' })
-  }
+    if (body.name === undefined) {
+        return response.status(400).json({ error: 'content missing' })
+    }
 
-  const subject = new Subject({
-    name: body.name,
-  })
+    const subject = new Subject({
+        name: body.name,
+    })
 
-  subject.save().then(savedSubject => {
-    response.json(savedSubject)
-  }).catch(error => next(error))
+    subject.save().then(savedSubject => {
+        response.json(savedSubject)
+    }).catch(error => next(error))
 })
 
 app.delete('/api/subjects/:id', (request, response, next) => {
   Subject.findByIdAndDelete(request.params.id)
-    .then(result => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
+      .then(result => {
+          response.status(204).end()
+      })
+      .catch(error => next(error))
+})
+
+app.put('/api/subjects/:id', (request, response, next) => {
+    const { name } = request.body
+
+    Subject.findByIdAndUpdate(
+        request.params.id, 
+        { name },
+        { new: true, runValidators: true, context: 'query' }
+    ) 
+        .then(updatedSubject => {
+          response.json(updatedSubject)
+        })
+        .catch(error => next(error))
 })
 
 app.use(unknownEndpoint)
