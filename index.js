@@ -1,4 +1,6 @@
 const express = require('express')
+const cors = require('cors')
+
 const app = express()
 
 const Subject = require('./models/subject')
@@ -11,8 +13,7 @@ const unknownEndpoint = (request, response) => {
 }
 
 // Enable CORS if the Gbacklog UI is served from somewhere else
-// const cors = require('cors')
-// app.use(cors())
+app.use(cors())
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
