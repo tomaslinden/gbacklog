@@ -8,6 +8,18 @@ const Subject = require('./models/subject')
 app.use(express.static('dist'))
 app.use(express.json())
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
+}
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -25,7 +37,7 @@ app.get('/api/subjects', (request, response) => {
     })
 })
 
-app.post('/api/subjects', (request, response) => {
+app.post('/api/subjects', (request, response, next) => {
   const body = request.body
 
   if (body.name === undefined) {
@@ -38,10 +50,19 @@ app.post('/api/subjects', (request, response) => {
 
   subject.save().then(savedSubject => {
     response.json(savedSubject)
-  })
+  }).catch(error => next(error))
+})
+
+app.delete('/api/subjects/:id', (request, response, next) => {
+  Subject.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
