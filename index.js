@@ -10,6 +10,10 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
+// Enable CORS if the Gbacklog UI is served from somewhere else
+// const cors = require('cors')
+// app.use(cors())
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -18,6 +22,22 @@ app.get('/api/subjects', (request, response) => {
     Subject.find({}).then(subject => {
       response.json(subject)
     })
+})
+
+app.post('/api/subjects', (request, response) => {
+  const body = request.body
+
+  if (body.name === undefined) {
+    return response.status(400).json({ error: 'content missing' })
+  }
+
+  const subject = new Subject({
+    name: body.name,
+  })
+
+  subject.save().then(savedSubject => {
+    response.json(savedSubject)
+  })
 })
 
 app.use(unknownEndpoint)
