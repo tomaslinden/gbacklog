@@ -6,6 +6,8 @@ const app = express()
 const Subject = require('./models/subject')
 
 app.use(express.static('dist'))
+// Enable CORS if the Gbacklog UI is served from somewhere else
+// app.use(cors())
 app.use(express.json())
 
 const errorHandler = (error, request, response, next) => {
@@ -24,9 +26,6 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
-// Enable CORS if the Gbacklog UI is served from somewhere else
-app.use(cors())
-
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -37,10 +36,10 @@ app.get('/api/subjects', (request, response) => {
     })
 })
 
-app.get('/api/subjects/:id', (request, response) => {
+app.get('/api/subjects/:id', (request, response, next) => {
     Subject.findById(request.params.id).then(subject => {
         response.json(subject)
-    })
+    }).catch(error => next(error))
 })
 
 app.post('/api/subjects', (request, response, next) => {
