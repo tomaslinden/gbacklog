@@ -14,7 +14,12 @@ mongoose.connect(url)
   })
 
 const subjectSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minlength: 1,
+    maxlength: 50, // Todo: Connect this with the max length validation in create subject
+    required: true
+  },
 })
 
 subjectSchema.set('toJSON', {
