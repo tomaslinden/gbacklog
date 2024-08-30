@@ -1,4 +1,4 @@
-const app = require('./app') // The Express app
+const app = require('./app')
 const config = require('./utils/config')
 
 const PORT = config.PORT || 3001
