@@ -31,13 +31,13 @@ frameworksRouter.post('/', (request, response, next) => {
     }).catch(error => next(error))
 })
 
-// frameworksRouter.delete('/:id', (request, response, next) => {
-//     Framework.findByIdAndDelete(request.params.id)
-//         .then(result => {
-//             response.status(204).end()
-//         })
-//         .catch(error => next(error))
-// })
+frameworksRouter.delete('/:id', (request, response, next) => {
+    Framework.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
+})
 
 // frameworksRouter.put('/:id', (request, response, next) => {
 //     const { name, description, facets } = request.body
