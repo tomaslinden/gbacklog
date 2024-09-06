@@ -7,11 +7,11 @@ frameworksRouter.get('/', (request, response) => {
     })
 })
 
-// frameworksRouter.get('/:id', (request, response, next) => {
-//     Subject.findById(request.params.id).then(framework => {
-//         response.json(framework)
-//     }).catch(error => next(error))
-// })
+frameworksRouter.get('/:id', (request, response, next) => {
+    Framework.findById(request.params.id).then(framework => {
+        response.json(framework)
+    }).catch(error => next(error))
+})
 
 frameworksRouter.post('/', (request, response, next) => {
     const body = request.body
@@ -39,18 +39,20 @@ frameworksRouter.delete('/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-// frameworksRouter.put('/:id', (request, response, next) => {
-//     const { name, description, facets } = request.body
+frameworksRouter.put('/:id', (request, response, next) => {
+    const { name, description, facets } = request.body
 
-//     Framework.findByIdAndUpdate(
-//         request.params.id, 
-//         { name, description, facets },
-//         { new: true, runValidators: true, context: 'query' }
-//     ) 
-//         .then(updatedFramework => {
-//             response.json(updatedFramework)
-//         })
-//         .catch(error => next(error))
-// })
+    Framework.findByIdAndUpdate(
+        request.params.id, 
+        { name, description, facets },
+        { new: true,
+            runValidators: true, 
+            context: 'query' }
+    ) 
+        .then(updatedFramework => {
+            response.json(updatedFramework)
+        })
+        .catch(error => next(error))
+})
 
 module.exports = frameworksRouter
