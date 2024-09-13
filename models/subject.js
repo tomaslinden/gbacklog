@@ -5,7 +5,7 @@ const subjectSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: 1,
-    maxlength: 50, // Todo: Connect this with the max length validation in create subject
+    maxlength: 100, // Todo: Connect this with the max length validation in create subject
     required: true
   },
 })
