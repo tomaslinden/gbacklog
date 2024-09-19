@@ -1,11 +1,12 @@
 const express = require('express')
 const config = require('./utils/config')
-// const cors = require('cors')
+const cors = require('cors')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 
 const app = express()
+app.use(cors())
 
 const subjectsRouter = require('./controllers/subjects')
 const frameworksRouter = require('./controllers/frameworks')
@@ -22,8 +23,6 @@ mongoose.connect(url)
     logger.error('error connecting to MongoDB:', error.message)
   })
 
-// Enable CORS if the Gbacklog UI is served from somewhere else
-// app.use(cors())
 app.use(express.static('dist'))
 app.use(express.json())
 
