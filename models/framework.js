@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const config = require('../utils/config')
 
-const facetSchema = new mongoose.Schema({
+const frameworkFacetSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: 1,
@@ -34,7 +34,7 @@ const frameworkSchema = new mongoose.Schema({
     maxlength: 500, // Todo: Connect this with the max length validation in create subject
   },
   facets: {
-    type: [facetSchema],
+    type: [frameworkFacetSchema],
     required: true
   }
 })
