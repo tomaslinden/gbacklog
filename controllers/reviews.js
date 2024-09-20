@@ -15,7 +15,6 @@ reviewsRouter.get('/:id', (request, response, next) => {
 
 reviewsRouter.post('/', (request, response, next) => {
     const body = request.body
-    console.log('body', body)
     if (
         body.frameworkId === undefined ||
         body.subjectId === undefined ||
