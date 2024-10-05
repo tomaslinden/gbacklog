@@ -33,7 +33,12 @@ const reviewSchema = new mongoose.Schema({
   facetContents: {
     type: [reviewFacetSchema],
     required: true
-  }
+  },
+  // type: {
+  //   type: String,
+  //   minlength: 1,
+  //   maxlength: 10, // Todo: Connect this with the max length validation in create subject
+  // }
 })
 
 reviewSchema.set('toJSON', {

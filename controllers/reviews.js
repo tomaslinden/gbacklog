@@ -20,6 +20,7 @@ reviewsRouter.post('/', (request, response, next) => {
         body.subjectId === undefined ||
         body.facetContents === undefined ||
         body.facetContents.length === 0
+        // body.type === undefined
     ) {
         return response.status(400).json({ error: 'content missing' })
     }
@@ -28,6 +29,7 @@ reviewsRouter.post('/', (request, response, next) => {
         frameworkId: body.frameworkId,
         subjectId: body.subjectId,
         facetContents: body.facetContents
+        // type: body.type
     })
 
     review.save().then(savedReview => {
@@ -44,11 +46,24 @@ reviewsRouter.delete('/:id', (request, response, next) => {
 })
 
 reviewsRouter.put('/:id', (request, response, next) => {
+    // const { frameworkId, subjectId, facetContents, type } = request.body
     const { frameworkId, subjectId, facetContents } = request.body
+
+    if (
+        frameworkId === undefined ||
+        subjectId === undefined ||
+        facetContents === undefined ||
+        facetContents.length === 0
+        // type === undefined
+    ) {
+        return response.status(400).json({ error: 'content missing' })
+    }
 
     Review.findByIdAndUpdate(
         request.params.id, 
-        { frameworkId, subjectId, facetContents },
+        { frameworkId, subjectId, facetContents
+            // , type
+        },
         { new: true,
             runValidators: true, 
             context: 'query' }
