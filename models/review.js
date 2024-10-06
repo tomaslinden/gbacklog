@@ -39,7 +39,7 @@ const reviewSchema = new mongoose.Schema({
   //   minlength: 1,
   //   maxlength: 10, // Todo: Connect this with the max length validation in create subject
   // }
-})
+}, { timestamps: true })
 
 reviewSchema.set('toJSON', {
   transform: (document, returnedObject) => {

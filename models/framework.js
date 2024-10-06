@@ -37,7 +37,7 @@ const frameworkSchema = new mongoose.Schema({
     type: [frameworkFacetSchema],
     required: true
   }
-})
+}, { timestamps: true })
 
 frameworkSchema.set('toJSON', {
   transform: (document, returnedObject) => {
