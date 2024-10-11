@@ -88,5 +88,4 @@ subjectsRouter.patch('/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-
 module.exports = subjectsRouter
