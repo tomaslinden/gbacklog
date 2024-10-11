@@ -23,22 +23,18 @@ const reviewSchema = new mongoose.Schema({
     // See https://mongoosejs.com/docs/guide.html#indexes
     // index: true
   },
-  subjectId: {
-    type: String,
-    required: true
-    // Todo: Enable this once secondary indexes has been understood
-    // See https://mongoosejs.com/docs/guide.html#indexes
-    // index: true // Enable this once secondary indexes has been understood
-  },
   facetContents: {
     type: [reviewFacetSchema],
     required: true
   },
-  // type: {
-  //   type: String,
-  //   minlength: 1,
-  //   maxlength: 10, // Todo: Connect this with the max length validation in create subject
-  // }
+  targetType: {
+    type: String,
+    required: true
+  },
+  targetId: {
+    type: String,
+    required: true
+  },
 }, { timestamps: true })
 
 reviewSchema.set('toJSON', {

@@ -15,21 +15,22 @@ reviewsRouter.get('/:id', (request, response, next) => {
 
 reviewsRouter.post('/', (request, response, next) => {
     const body = request.body
+
     if (
         body.frameworkId === undefined ||
-        body.subjectId === undefined ||
+        body.targetType === undefined ||
+        body.targetId === undefined ||
         body.facetContents === undefined ||
         body.facetContents.length === 0
-        // body.type === undefined
     ) {
         return response.status(400).json({ error: 'content missing' })
     }
 
     const review = new Review({
         frameworkId: body.frameworkId,
-        subjectId: body.subjectId,
+        targetType: body.targetType,
+        targetId: body.targetId,
         facetContents: body.facetContents
-        // type: body.type
     })
 
     review.save().then(savedReview => {
@@ -46,24 +47,21 @@ reviewsRouter.delete('/:id', (request, response, next) => {
 })
 
 reviewsRouter.put('/:id', (request, response, next) => {
-    // const { frameworkId, subjectId, facetContents, type } = request.body
-    const { frameworkId, subjectId, facetContents } = request.body
+    const { frameworkId, targetType, targetId, facetContents } = request.body
 
     if (
         frameworkId === undefined ||
-        subjectId === undefined ||
+        targetType === undefined ||
+        targetId === undefined ||
         facetContents === undefined ||
         facetContents.length === 0
-        // type === undefined
     ) {
         return response.status(400).json({ error: 'content missing' })
     }
 
     Review.findByIdAndUpdate(
         request.params.id, 
-        { frameworkId, subjectId, facetContents
-            // , type
-        },
+        { frameworkId, targetType, targetId, facetContents },
         { new: true,
             runValidators: true, 
             context: 'query' }
