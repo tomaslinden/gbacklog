@@ -8,6 +8,11 @@ const subjectSchema = new mongoose.Schema({
     maxlength: 100, // Todo: Connect this with the max length validation in create subject
     required: true
   },
+  status: {
+    type: String,
+    minlength: 1,
+    maxlength: 10, // Todo: Connect this with the max length validation in create subject
+  }
 }, { timestamps: true })
 
 subjectSchema.set('toJSON', {

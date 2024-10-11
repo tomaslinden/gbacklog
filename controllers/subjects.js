@@ -2,7 +2,12 @@ const subjectsRouter = require('express').Router()
 const Subject = require('../models/subject')
 
 subjectsRouter.get('/', (request, response) => {
-    Subject.find({}).then(subject => {
+    let queryObject = {}
+    if (request?.query?.status) {
+        queryObject.status = request.query.status
+    }
+
+    Subject.find(queryObject).then(subject => {
         response.json(subject)
     })
 })
@@ -22,6 +27,7 @@ subjectsRouter.post('/', (request, response, next) => {
 
     const subject = new Subject({
         name: body.name,
+        status: body?.status ? body.status : 'draft'
     })
 
     subject.save().then(savedSubject => {
@@ -30,6 +36,9 @@ subjectsRouter.post('/', (request, response, next) => {
 })
 
 subjectsRouter.delete('/:id', (request, response, next) => {
+
+    // Todo: Add check that subject is not final (only non-final subjects can be deleted)
+
     Subject.findByIdAndDelete(request.params.id)
         .then(result => {
             response.status(204).end()
@@ -38,11 +47,14 @@ subjectsRouter.delete('/:id', (request, response, next) => {
 })
 
 subjectsRouter.put('/:id', (request, response, next) => {
-    const { name } = request.body
+
+    // Todo: Add check that only non-final subjects can be updated
+
+    const { name, status } = request.body
 
     Subject.findByIdAndUpdate(
         request.params.id, 
-        { name },
+        { name, status },
         { new: true, runValidators: true, context: 'query' }
     ) 
         .then(updatedSubject => {
@@ -50,5 +62,31 @@ subjectsRouter.put('/:id', (request, response, next) => {
         })
         .catch(error => next(error))
 })
+
+subjectsRouter.patch('/:id', (request, response, next) => {
+
+    // Todo: Add check that subjects can only be changed from draft to final
+
+    const { status, name } = request.body
+
+    let fieldsToUpdate = {}
+    if (status) {
+        fieldsToUpdate['status'] = status
+    }
+    if (name) {
+        fieldsToUpdate['name'] = name
+    }
+
+    Subject.findByIdAndUpdate(
+        request.params.id, 
+        fieldsToUpdate,
+        { new: true, runValidators: true, context: 'query' }
+    ) 
+        .then(updatedSubject => {
+            response.json(updatedSubject)
+        })
+        .catch(error => next(error))
+})
+
 
 module.exports = subjectsRouter
