@@ -27,7 +27,8 @@ subjectsRouter.post('/', (request, response, next) => {
 
     const subject = new Subject({
         name: body.name,
-        status: body?.status ? body.status : 'draft'
+        status: body?.status ? body.status : 'draft',
+        description: body.description
     })
 
     subject.save().then(savedSubject => {
@@ -50,11 +51,11 @@ subjectsRouter.put('/:id', (request, response, next) => {
 
     // Todo: Add check that only non-final subjects can be updated
 
-    const { name, status } = request.body
+    const { name, status, description } = request.body
 
     Subject.findByIdAndUpdate(
         request.params.id, 
-        { name, status },
+        { name, status, description },
         { new: true, runValidators: true, context: 'query' }
     ) 
         .then(updatedSubject => {
