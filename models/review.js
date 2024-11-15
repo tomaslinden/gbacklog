@@ -35,6 +35,10 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  flagged: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true })
 
 reviewSchema.set('toJSON', {

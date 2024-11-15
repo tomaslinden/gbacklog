@@ -41,6 +41,10 @@ const frameworkSchema = new mongoose.Schema({
     type: String,
     minlength: 1,
     maxlength: 10, // Todo: Connect this with the max length validation in create subject
+  },
+  flagged: {
+    type: Boolean,
+    default: false
   }
 }, { timestamps: true })
 

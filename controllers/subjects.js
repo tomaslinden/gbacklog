@@ -3,9 +3,12 @@ const Subject = require('../models/subject')
 
 subjectsRouter.get('/', (request, response) => {
     let queryObject = {}
+
     if (request?.query?.status) {
         queryObject.status = request.query.status
     }
+    // Todo add a mechanism for getting flagged objects for future admin users
+    queryObject.flagged = false
 
     Subject.find(queryObject).then(subject => {
         response.json(subject)
@@ -13,6 +16,7 @@ subjectsRouter.get('/', (request, response) => {
 })
 
 subjectsRouter.get('/:id', (request, response, next) => {
+    // Todo add mechanism for not displaying flagged items (if not admin user)
     Subject.findById(request.params.id).then(subject => {
         response.json(subject)
     }).catch(error => next(error))
@@ -68,7 +72,7 @@ subjectsRouter.patch('/:id', (request, response, next) => {
 
     // Todo: Add check that subjects can only be changed from draft to final
 
-    const { status, name } = request.body
+    const { status, name, description, flagged } = request.body
 
     let fieldsToUpdate = {}
     if (status) {
@@ -76,6 +80,12 @@ subjectsRouter.patch('/:id', (request, response, next) => {
     }
     if (name) {
         fieldsToUpdate['name'] = name
+    }
+    if (description) {
+        fieldsToUpdate['description'] = description
+    }
+    if (flagged && flagged === true) {
+        fieldsToUpdate['flagged'] = true
     }
 
     Subject.findByIdAndUpdate(

@@ -18,6 +18,10 @@ const subjectSchema = new mongoose.Schema({
     minlength: 1,
     maxlength: 500, // Todo: Connect this with the max length validation in create subject
   },
+  flagged: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true })
 
 subjectSchema.set('toJSON', {

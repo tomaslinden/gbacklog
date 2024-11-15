@@ -2,12 +2,17 @@ const reviewsRouter = require('express').Router()
 const Review = require('../models/review')
 
 reviewsRouter.get('/', (request, response) => {
-    Review.find({}).then(review => {
+    let queryObject = {}
+    // Todo add a mechanism for getting flagged objects for future admin users
+    queryObject.flagged = false
+
+    Review.find(queryObject).then(review => {
         response.json(review)
     })
 })
 
 reviewsRouter.get('/:id', (request, response, next) => {
+    // Todo add mechanism for not displaying flagged items (if not admin user)
     Review.findById(request.params.id).then(review => {
         response.json(review)
     }).catch(error => next(error))
@@ -71,5 +76,29 @@ reviewsRouter.put('/:id', (request, response, next) => {
         })
         .catch(error => next(error))
 })
+
+reviewsRouter.patch('/:id', (request, response, next) => {
+
+    // Todo: Add check that frameworks can only be changed from draft to final
+
+    const { flagged } = request.body
+
+    let fieldsToUpdate = {}
+
+    if (flagged && flagged === true) {
+        fieldsToUpdate['flagged'] = true
+    }
+
+    Review.findByIdAndUpdate(
+        request.params.id, 
+        fieldsToUpdate,
+        { new: true, runValidators: true, context: 'query' }
+    ) 
+        .then(updatedReview => {
+            response.json(updatedReview)
+        })
+        .catch(error => next(error))
+})
+
 
 module.exports = reviewsRouter

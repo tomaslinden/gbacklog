@@ -6,6 +6,8 @@ frameworksRouter.get('/', (request, response) => {
     if (request?.query?.status) {
         queryObject.status = request.query.status
     }
+    // Todo add a mechanism for getting flagged objects for future admin users
+    queryObject.flagged = false
 
     Framework.find(queryObject).then(framework => {
         response.json(framework)
@@ -13,6 +15,7 @@ frameworksRouter.get('/', (request, response) => {
 })
 
 frameworksRouter.get('/:id', (request, response, next) => {
+    // Todo add mechanism for not displaying flagged items (if not admin user)
     Framework.findById(request.params.id).then(framework => {
         response.json(framework)
     }).catch(error => next(error))
@@ -71,11 +74,15 @@ frameworksRouter.patch('/:id', (request, response, next) => {
 
     // Todo: Add check that frameworks can only be changed from draft to final
 
-    const { status, name } = request.body
+    const { status, name, flagged } = request.body
 
     let fieldsToUpdate = {}
     if (status) {
         fieldsToUpdate['status'] = status
+    }
+
+    if (flagged && flagged === true) {
+        fieldsToUpdate['flagged'] = true
     }
 
     Framework.findByIdAndUpdate(
