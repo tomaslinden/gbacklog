@@ -11,6 +11,7 @@ app.use(cors())
 const subjectsRouter = require('./controllers/subjects')
 const frameworksRouter = require('./controllers/frameworks')
 const reviewsRouter = require('./controllers/reviews')
+const searchRouter = require('./controllers/search')
 
 mongoose.set('strictQuery', false)
 
@@ -30,6 +31,7 @@ app.use(express.json())
 app.use('/api/subjects', subjectsRouter)
 app.use('/api/frameworks', frameworksRouter)
 app.use('/api/reviews', reviewsRouter)
+app.use('/api/search', searchRouter)
 
 const { unknownEndpoint, errorHandler } = middleware;
 app.use(unknownEndpoint)
