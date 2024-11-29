@@ -16,12 +16,10 @@ const reviewFacetSchema = new mongoose.Schema({
 });
 
 const reviewSchema = new mongoose.Schema({
-  frameworkId: {
-    type: String,
+  reviewFramework: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Framework',
     required: true
-    // Todo: Enable this once secondary indexes has been understood
-    // See https://mongoosejs.com/docs/guide.html#indexes
-    // index: true
   },
   facetContents: {
     type: [reviewFacetSchema],

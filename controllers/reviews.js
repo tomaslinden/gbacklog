@@ -1,24 +1,31 @@
 const reviewsRouter = require('express').Router()
 const Review = require('../models/review')
+const Framework = require('../models/framework')
 
-reviewsRouter.get('/', (request, response) => {
+reviewsRouter.get('/', async (request, response) => {
     let queryObject = {}
     // Todo add a mechanism for getting flagged objects for future admin users
     queryObject.flagged = false
 
-    Review.find(queryObject).then(review => {
-        response.json(review)
-    })
+    const reviews = await Review
+        .find(queryObject)
+        .populate('reviewFramework')
+        .exec()
+
+    response.json(reviews)
 })
 
-reviewsRouter.get('/:id', (request, response, next) => {
+reviewsRouter.get('/:id', async (request, response, next) => {
     // Todo add mechanism for not displaying flagged items (if not admin user)
-    Review.findById(request.params.id).then(review => {
-        response.json(review)
-    }).catch(error => next(error))
+    const review = await Review
+        .findById(request.params.id)
+        .populate('reviewFramework')
+        .exec()
+    
+    response.json(review)
 })
 
-reviewsRouter.post('/', (request, response, next) => {
+reviewsRouter.post('/', async (request, response, next) => {
     const body = request.body
 
     if (
@@ -31,8 +38,12 @@ reviewsRouter.post('/', (request, response, next) => {
         return response.status(400).json({ error: 'content missing' })
     }
 
+    const reviewFramework =
+        await Framework.findById(body.frameworkId)
+        .catch(error => next(error))
+
     const review = new Review({
-        frameworkId: body.frameworkId,
+        reviewFramework,
         targetType: body.targetType,
         targetId: body.targetId,
         facetContents: body.facetContents
@@ -43,6 +54,7 @@ reviewsRouter.post('/', (request, response, next) => {
     }).catch(error => next(error))
 })
 
+
 reviewsRouter.delete('/:id', (request, response, next) => {
     Review.findByIdAndDelete(request.params.id)
         .then(result => {
@@ -51,7 +63,7 @@ reviewsRouter.delete('/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
-reviewsRouter.put('/:id', (request, response, next) => {
+reviewsRouter.put('/:id', async (request, response, next) => {
     const { frameworkId, targetType, targetId, facetContents } = request.body
 
     if (
@@ -64,12 +76,14 @@ reviewsRouter.put('/:id', (request, response, next) => {
         return response.status(400).json({ error: 'content missing' })
     }
 
+    const reviewFramework =
+        await Framework.findById(body.frameworkId)
+        .catch(error => next(error))
+    
     Review.findByIdAndUpdate(
         request.params.id, 
-        { frameworkId, targetType, targetId, facetContents },
-        { new: true,
-            runValidators: true, 
-            context: 'query' }
+        { reviewFramework, targetType, targetId, facetContents },
+        { new: true, runValidators: true, context: 'query' }
     ) 
         .then(updatedReview => {
             response.json(updatedReview)

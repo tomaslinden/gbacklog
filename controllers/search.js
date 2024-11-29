@@ -48,9 +48,10 @@ searchRouter.get('/', async (request, response) => {
         reviewFieldsToSearch.push({ '_id': new ObjectId(searchTerm) })
     }
 
-    const reviews = await Review.find(
-        { $or: reviewFieldsToSearch }
-    )
+    const reviews = await Review
+        .find({ $or: reviewFieldsToSearch })
+        .populate('reviewFramework')
+        .exec()
 
 
     response.json({
