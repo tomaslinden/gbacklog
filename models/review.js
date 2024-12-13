@@ -29,9 +29,13 @@ const reviewSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  targetId: {
-    type: String,
-    required: true
+  subjectTarget: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subject'
+  },
+  frameworkTarget: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Framework'
   },
   flagged: {
     type: Boolean,

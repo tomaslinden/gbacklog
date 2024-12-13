@@ -1,6 +1,8 @@
 const reviewsRouter = require('express').Router()
+const Subject = require('../models/subject')
 const Review = require('../models/review')
 const Framework = require('../models/framework')
+var mongoose = require('mongoose')
 
 reviewsRouter.get('/', async (request, response) => {
     let queryObject = {}
@@ -10,6 +12,8 @@ reviewsRouter.get('/', async (request, response) => {
     const reviews = await Review
         .find(queryObject)
         .populate('reviewFramework')
+        .populate('subjectTarget')
+        .populate('frameworkTarget')
         .exec()
 
     response.json(reviews)
@@ -20,10 +24,42 @@ reviewsRouter.get('/:id', async (request, response, next) => {
     const review = await Review
         .findById(request.params.id)
         .populate('reviewFramework')
+        .populate('subjectTarget')
+        .populate('frameworkTarget')
         .exec()
     
     response.json(review)
 })
+
+reviewsRouter.get('/framework/:reviewFrameworkId/:targetType/:targetId', async (request, response, next) => {
+    let queryObject = {}
+    // Todo add a mechanism for getting flagged objects for future admin users
+    queryObject.flagged = false
+
+    const { Types: { ObjectId: { createFromHexString } } } = mongoose
+
+    const reviewFrameworkObjectId = createFromHexString(request.params.reviewFrameworkId)
+    const reviewTargetObjectId = createFromHexString(request.params.targetId)
+
+    queryObject.reviewFramework = reviewFrameworkObjectId
+
+    if (request.params.targetType === 'subject') {
+        queryObject.subjectTarget = reviewTargetObjectId
+    // Framework target
+    } else {
+        queryObject.frameworkTarget = reviewTargetObjectId
+    }
+
+    const reviews = await Review
+        .find(queryObject)
+        .populate('reviewFramework')
+        .populate('subjectTarget')
+        .populate('frameworkTarget')
+        .exec()
+
+    response.json(reviews)
+})
+
 
 reviewsRouter.post('/', async (request, response, next) => {
     const body = request.body
@@ -42,10 +78,25 @@ reviewsRouter.post('/', async (request, response, next) => {
         await Framework.findById(body.frameworkId)
         .catch(error => next(error))
 
+    let subjectTarget;
+    let frameworkTarget;
+
+    if (body.targetType === 'subject') {
+        subjectTarget =
+            await Subject.findById(body.targetId)
+                .catch(error => next(error))
+    // Target is a framework
+    } else {
+        frameworkTarget =
+            await Framework.findById(body.targetId)
+                .catch(error => next(error))
+    }
+
     const review = new Review({
         reviewFramework,
         targetType: body.targetType,
-        targetId: body.targetId,
+        subjectTarget,
+        frameworkTarget,
         facetContents: body.facetContents
     })
 
@@ -77,12 +128,32 @@ reviewsRouter.put('/:id', async (request, response, next) => {
     }
 
     const reviewFramework =
-        await Framework.findById(body.frameworkId)
+        await Framework.findById(frameworkId)
         .catch(error => next(error))
     
+    let subjectTarget;
+    let frameworkTarget;
+
+    if (targetType === 'subject') {
+        subjectTarget =
+            await Subject.findById(targetId)
+                .catch(error => next(error))
+    // Target is a framework
+    } else {
+        frameworkTarget =
+            await Framework.findById(targetId)
+                .catch(error => next(error))
+    }
+            
     Review.findByIdAndUpdate(
         request.params.id, 
-        { reviewFramework, targetType, targetId, facetContents },
+        { 
+            reviewFramework,
+            targetType,
+            subjectTarget,
+            frameworkTarget,
+            facetContents
+        },
         { new: true, runValidators: true, context: 'query' }
     ) 
         .then(updatedReview => {
@@ -92,9 +163,7 @@ reviewsRouter.put('/:id', async (request, response, next) => {
 })
 
 reviewsRouter.patch('/:id', (request, response, next) => {
-
     // Todo: Add check that frameworks can only be changed from draft to final
-
     const { flagged } = request.body
 
     let fieldsToUpdate = {}
