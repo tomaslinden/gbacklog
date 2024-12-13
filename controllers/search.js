@@ -51,8 +51,9 @@ searchRouter.get('/', async (request, response) => {
     const reviews = await Review
         .find({ $or: reviewFieldsToSearch })
         .populate('reviewFramework')
+        .populate('subjectTarget')
+        .populate('frameworkTarget')
         .exec()
-
 
     response.json({
         subjects, frameworks, reviews
