@@ -78,6 +78,12 @@ reviewsRouter.post('/', async (request, response, next) => {
         await Framework.findById(body.frameworkId)
         .catch(error => next(error))
 
+    if (reviewFramework?.verdictType &&
+        reviewFramework?.verdictType !== 'none' &&
+        body.verdictValue === undefined) {
+        return response.status(400).json({ error: 'verdictValue missing' })
+    }
+
     let subjectTarget;
     let frameworkTarget;
 
@@ -92,13 +98,19 @@ reviewsRouter.post('/', async (request, response, next) => {
                 .catch(error => next(error))
     }
 
-    const review = new Review({
+    let reviewObject = {
         reviewFramework,
         targetType: body.targetType,
         subjectTarget,
         frameworkTarget,
         facetContents: body.facetContents
-    })
+    }
+
+    if (body?.verdictValue !== undefined) {
+        reviewObject.verdictValue = body.verdictValue
+    }
+
+    const review = new Review(reviewObject)
 
     review.save().then(savedReview => {
         response.json(savedReview)

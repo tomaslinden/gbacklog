@@ -1,6 +1,20 @@
 const mongoose = require('mongoose')
 const config = require('../utils/config')
 
+const frameworkVerdictPropertiesSchema = new mongoose.Schema({
+  max: {
+    type: Number,
+    required: true
+  },
+  min: {
+    type: Number,
+    required: true
+  },
+  stepSize: {
+    type: Number
+  },
+});
+
 const frameworkFacetSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,14 +39,20 @@ const frameworkSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: 1,
-    maxlength: 50, // Todo: Connect this with the max length validation in create subject
+    maxlength: 50, // Todo: Connect this with the max length validation in create framework
     required: true
   },
   description: {
     type: String,
     minlength: 1,
-    maxlength: 500, // Todo: Connect this with the max length validation in create subject
+    maxlength: 500, // Todo: Connect this with the max length validation in create framework
   },
+  verdictType: {
+    type: String,
+    minlength: 1,
+    maxlength: 50, // Todo: Connect this with the max length validation in create framework
+  },
+  verdictProperties: frameworkVerdictPropertiesSchema,
   facets: {
     type: [frameworkFacetSchema],
     required: true
@@ -40,7 +60,7 @@ const frameworkSchema = new mongoose.Schema({
   status: {
     type: String,
     minlength: 1,
-    maxlength: 10, // Todo: Connect this with the max length validation in create subject
+    maxlength: 10, // Todo: Connect this with the max length validation in create framework
   },
   flagged: {
     type: Boolean,
@@ -53,6 +73,7 @@ frameworkSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
+    // Todo also remove _id from inside facets and verdictProperties
   }
 })
 

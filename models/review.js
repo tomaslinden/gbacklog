@@ -40,7 +40,10 @@ const reviewSchema = new mongoose.Schema({
   flagged: {
     type: Boolean,
     default: false
-  }
+  },
+  verdictValue: {
+    type: Number
+  },
 }, { timestamps: true })
 
 reviewSchema.set('toJSON', {

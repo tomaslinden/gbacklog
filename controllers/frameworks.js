@@ -31,6 +31,8 @@ frameworksRouter.post('/', (request, response, next) => {
     const framework = new Framework({
         name: body.name,
         description: body.description,
+        verdictType: body.verdictType,
+        verdictProperties: body.verdictProperties,
         facets: body.facets,
         status: body?.status ? body.status : 'draft'
     })
