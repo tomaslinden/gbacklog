@@ -37,6 +37,10 @@ const reviewSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Framework'
   },
+  reviewTarget: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review'
+  },
   flagged: {
     type: Boolean,
     default: false

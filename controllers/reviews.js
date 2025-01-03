@@ -14,6 +14,7 @@ reviewsRouter.get('/', async (request, response) => {
         .populate('reviewFramework')
         .populate('subjectTarget')
         .populate('frameworkTarget')
+        .populate('reviewTarget')
         .exec()
 
     response.json(reviews)
@@ -21,11 +22,16 @@ reviewsRouter.get('/', async (request, response) => {
 
 reviewsRouter.get('/:id', async (request, response, next) => {
     // Todo add mechanism for not displaying flagged items (if not admin user)
+    if (!request.params.id || request.params.id === 'undefined') {
+        return response.status(400).json({ error: 'request id missing' })
+    }
+
     const review = await Review
         .findById(request.params.id)
         .populate('reviewFramework')
         .populate('subjectTarget')
         .populate('frameworkTarget')
+        .populate('reviewTarget')
         .exec()
     
     response.json(review)
@@ -45,6 +51,8 @@ reviewsRouter.get('/framework/:reviewFrameworkId/:targetType/:targetId', async (
 
     if (request.params.targetType === 'subject') {
         queryObject.subjectTarget = reviewTargetObjectId
+    } else if (request.params.targetType === 'review') {
+        queryObject.reviewTarget = reviewTargetObjectId
     // Framework target
     } else {
         queryObject.frameworkTarget = reviewTargetObjectId
@@ -55,6 +63,7 @@ reviewsRouter.get('/framework/:reviewFrameworkId/:targetType/:targetId', async (
         .populate('reviewFramework')
         .populate('subjectTarget')
         .populate('frameworkTarget')
+        .populate('reviewTarget')
         .exec()
 
     response.json(reviews)
@@ -86,10 +95,15 @@ reviewsRouter.post('/', async (request, response, next) => {
 
     let subjectTarget;
     let frameworkTarget;
+    let reviewTarget;
 
     if (body.targetType === 'subject') {
         subjectTarget =
             await Subject.findById(body.targetId)
+                .catch(error => next(error))
+    } else if (body.targetType === 'review') {
+        reviewTarget =
+            await Review.findById(body.targetId)
                 .catch(error => next(error))
     // Target is a framework
     } else {
@@ -103,6 +117,7 @@ reviewsRouter.post('/', async (request, response, next) => {
         targetType: body.targetType,
         subjectTarget,
         frameworkTarget,
+        reviewTarget,
         facetContents: body.facetContents
     }
 
