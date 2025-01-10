@@ -191,12 +191,16 @@ reviewsRouter.put('/:id', async (request, response, next) => {
 
 reviewsRouter.patch('/:id', (request, response, next) => {
     // Todo: Add check that frameworks can only be changed from draft to final
-    const { flagged } = request.body
+    const { flagged, metaReviewAverage } = request.body
 
     let fieldsToUpdate = {}
 
     if (flagged && flagged === true) {
         fieldsToUpdate['flagged'] = true
+    }
+
+    if (metaReviewAverage && typeof metaReviewAverage === 'number') {
+        fieldsToUpdate['metaReviewAverage'] = metaReviewAverage
     }
 
     Review.findByIdAndUpdate(
@@ -225,7 +229,7 @@ reviewsRouter.get('/metareviewaverage/:id', async (request, response, next) => {
     queryObject.flagged = false
 
     const { Types: { ObjectId: { createFromHexString } } } = mongoose
-    
+
     // This is a hard-coded review framework which is used for creating meta-reviews
     const reviewFrameworkObjectId = createFromHexString('67658a8f7ee31ced58af9939')
     const reviewTargetObjectId = createFromHexString(request.params.id)
