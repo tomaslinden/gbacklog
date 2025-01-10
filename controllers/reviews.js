@@ -210,5 +210,55 @@ reviewsRouter.patch('/:id', (request, response, next) => {
         .catch(error => next(error))
 })
 
+reviewsRouter.get('/metareviewaverage/:id', async (request, response, next) => {
+    // Todo add mechanism for not displaying flagged items (if not admin user)
+    if (!request.params.id || request.params.id === 'undefined') {
+        return response.status(400).json({ error: 'request id missing' })
+    }
+
+    if (request.params.id?.length !== 24) {
+        return response.status(400).json({ error: 'bad request id' })
+    }
+
+    let queryObject = {}
+    // Todo add a mechanism for getting flagged objects for future admin users
+    queryObject.flagged = false
+
+    const { Types: { ObjectId: { createFromHexString } } } = mongoose
+    
+    // This is a hard-coded review framework which is used for creating meta-reviews
+    const reviewFrameworkObjectId = createFromHexString('67658a8f7ee31ced58af9939')
+    const reviewTargetObjectId = createFromHexString(request.params.id)
+    
+    queryObject.reviewFramework = reviewFrameworkObjectId
+    queryObject.reviewTarget = reviewTargetObjectId
+
+    const reviews = await Review
+        .find(queryObject)
+        .select({ "verdictValue": 1 })
+        .exec()
+
+    if (!reviews?.length) {
+        return response.status(404).json({ error: 'review not found' })
+    }
+
+    const sumOfMetaReviewVerdicts = reviews.reduce(
+        (sum, review) => sum + review.verdictValue,
+        0,
+    );
+
+    if (typeof sumOfMetaReviewVerdicts !== 'number') {
+        return response.status(500).json({ error: 'calculation of meta-review average failed' })
+    }
+
+    const metaReviewAverage = sumOfMetaReviewVerdicts / reviews.length
+
+    // Meta-review verdicts are binary, i.e. zero or one
+    if (metaReviewAverage < 0 || metaReviewAverage > 1) {
+        return response.status(500).json({ error: 'calculation of meta-review average failed' })
+    }
+
+    response.json(sumOfMetaReviewVerdicts / reviews.length)
+})
 
 module.exports = reviewsRouter
