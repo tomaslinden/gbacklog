@@ -16,7 +16,7 @@ const subjectSchema = new mongoose.Schema({
   description: {
     type: String,
     minlength: 1,
-    maxlength: 500, // Todo: Connect this with the max length validation in create subject
+    maxlength: 1000, // Todo: Connect this with the max length validation in create subject
   },
   flagged: {
     type: Boolean,

@@ -31,7 +31,7 @@ const frameworkFacetSchema = new mongoose.Schema({
   description: {
     type: String,
     minlength: 1,
-    maxlength: 500, // Todo: Connect this with the max length validation in create subject
+    maxlength: 1000, // Todo: Connect this with the max length validation in create subject
   },
 });
 
@@ -45,7 +45,7 @@ const frameworkSchema = new mongoose.Schema({
   description: {
     type: String,
     minlength: 1,
-    maxlength: 500, // Todo: Connect this with the max length validation in create framework
+    maxlength: 1000, // Todo: Connect this with the max length validation in create framework
   },
   verdictType: {
     type: String,

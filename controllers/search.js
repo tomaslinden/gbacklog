@@ -6,7 +6,10 @@ const Review = require('../models/review')
 
 searchRouter.get('/', async (request, response) => {
 
-    const searchTerm = request?.query?.searchTerm.trim() ?? ''
+    const searchTerm = 
+        (request?.query?.searchTerm.trim() === 'undefined' ||
+        !request?.query?.searchTerm.trim()) ? '' :
+        request?.query?.searchTerm.trim()
  
 
     // Subjects
@@ -18,10 +21,11 @@ searchRouter.get('/', async (request, response) => {
         subjectFieldsToSearch.push({ '_id': new ObjectId(searchTerm) })
     }
 
-    const subjects = await Subject.find(
-        { $or: subjectFieldsToSearch }
-    )
+    console.log('searchTerm', searchTerm)
 
+    const subjects = await Subject.find(
+        searchTerm === '' ? {} : { $or: subjectFieldsToSearch }
+    )
 
     // Frameworks
     let frameworkFieldsToSearch = [
@@ -36,7 +40,7 @@ searchRouter.get('/', async (request, response) => {
     }
 
     const frameworks = await Framework.find(
-        { $or: frameworkFieldsToSearch }
+        searchTerm === '' ? {} : { $or: frameworkFieldsToSearch }
     )
 
 
@@ -46,10 +50,13 @@ searchRouter.get('/', async (request, response) => {
     ]
     if (searchTerm.length === 24) {
         reviewFieldsToSearch.push({ '_id': new ObjectId(searchTerm) })
+        reviewFieldsToSearch.push({ 'subjectTarget': new ObjectId(searchTerm) })
+        reviewFieldsToSearch.push({ 'frameworkTarget': new ObjectId(searchTerm) })
+        reviewFieldsToSearch.push({ 'reviewTarget': new ObjectId(searchTerm) })
     }
 
     const reviews = await Review
-        .find({ $or: reviewFieldsToSearch })
+        .find(searchTerm === '' ? {} : { $or: reviewFieldsToSearch })
         .populate('reviewFramework')
         .populate('subjectTarget')
         .populate('frameworkTarget')

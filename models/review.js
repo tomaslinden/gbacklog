@@ -11,7 +11,7 @@ const reviewFacetSchema = new mongoose.Schema({
   contents: {
     type: String,
     minlength: 1,
-    maxlength: 500, // Todo: Connect this with the max length validation in create subject
+    maxlength: 1000, // Todo: Connect this with the max length validation in create subject
   },
 });
 
