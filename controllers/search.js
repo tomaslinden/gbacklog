@@ -21,12 +21,11 @@ searchRouter.get('/', async (request, response) => {
         subjectFieldsToSearch.push({ '_id': new ObjectId(searchTerm) })
     }
 
-    console.log('searchTerm', searchTerm)
-
     const subjects = await Subject.find(
         searchTerm === '' ? {} : { $or: subjectFieldsToSearch }
     )
 
+    
     // Frameworks
     let frameworkFieldsToSearch = [
         {'name': { $regex : new RegExp(searchTerm, "i") }},
