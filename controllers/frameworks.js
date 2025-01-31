@@ -57,11 +57,11 @@ frameworksRouter.put('/:id', (request, response, next) => {
 
     // Todo: Add check that only non-final subjects can be updated
 
-    const { name, description, facets, status } = request.body
+    const { name, description, facets, status, verdictType, verdictProperties } = request.body
 
     Framework.findByIdAndUpdate(
         request.params.id, 
-        { name, description, facets, status },
+        { name, description, facets, status, verdictType, verdictProperties },
         { new: true,
             runValidators: true, 
             context: 'query' }
