@@ -125,6 +125,10 @@ reviewsRouter.post('/', async (request, response, next) => {
         reviewObject.verdictValue = body.verdictValue
     }
 
+    if (body?.notes !== undefined) {
+        reviewObject.notes = body.notes
+    }
+
     const review = new Review(reviewObject)
 
     review.save().then(savedReview => {
@@ -142,7 +146,14 @@ reviewsRouter.delete('/:id', (request, response, next) => {
 })
 
 reviewsRouter.put('/:id', async (request, response, next) => {
-    const { frameworkId, targetType, targetId, facetContents } = request.body
+    const {
+        frameworkId,
+        targetType,
+        targetId,
+        facetContents,
+        verdictValue,
+        notes
+    } = request.body
 
     if (
         frameworkId === undefined ||
@@ -179,7 +190,9 @@ reviewsRouter.put('/:id', async (request, response, next) => {
             targetType,
             subjectTarget,
             frameworkTarget,
-            facetContents
+            facetContents,
+            verdictValue,
+            notes
         },
         { new: true, runValidators: true, context: 'query' }
     ) 

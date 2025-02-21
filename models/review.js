@@ -51,6 +51,10 @@ const reviewSchema = new mongoose.Schema({
   verdictValue: {
     type: Number
   },
+  notes: {
+    type: String,
+    maxlength: 2000
+  }
 }, { timestamps: true })
 
 reviewSchema.set('toJSON', {
