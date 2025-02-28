@@ -52,6 +52,7 @@ searchRouter.get('/', async (request, response) => {
         reviewFieldsToSearch.push({ 'subjectTarget': new ObjectId(searchTerm) })
         reviewFieldsToSearch.push({ 'frameworkTarget': new ObjectId(searchTerm) })
         reviewFieldsToSearch.push({ 'reviewTarget': new ObjectId(searchTerm) })
+        reviewFieldsToSearch.push({ 'reviewFramework': new ObjectId(searchTerm) })
     }
 
     const reviews = await Review
